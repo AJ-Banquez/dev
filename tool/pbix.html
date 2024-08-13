@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertidor de PBIX a XML</title>
+</head>
+<body>
+    <h1>Convertidor de PBIX a XML</h1>
+    <input type="file" id="pbixFile" accept=".pbix">
+    <button onclick="convertToXML()">Convertir a XML</button>
+    <pre id="output"></pre>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script>
+        document.getElementById('pbixFile').addEventListener('change', handleFileSelect, false);
+
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file && file.name.endsWith('.pbix')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const arrayBuffer = e.target.result;
+            JSZip.loadAsync(arrayBuffer).then(function(zip) {
+                let xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>\n<pbix>\n';
+                let promises = [];
+
+                zip.forEach(function(relativePath, zipEntry) {
+                    const promise = zipEntry.async('string').then(function(content) {
+                        xmlOutput += `<file name="${relativePath}">\n<![CDATA[\n${content}\n]]>\n</file>\n`;
+                    }).catch(function() {
+                        // If the file is not readable as a string, we skip it for simplicity.
+                        // Alternatively, we could process binary data if needed.
+                    });
+                    promises.push(promise);
+                });
+
+                Promise.all(promises).then(function() {
+                    xmlOutput += '</pbix>';
+                    document.getElementById('output').textContent = xmlOutput;
+                    downloadXMLFile(xmlOutput, 'pbix-content.xml');
+                });
+            });
+        };
+        reader.readAsArrayBuffer(file);
+    } else {
+        alert('Por favor, selecciona un archivo .pbix.');
+    }
+}
+
+function convertToXML() {
+    const fileInput = document.getElementById('pbixFile');
+    if (!fileInput.files.length) {
+        alert('Por favor, selecciona un archivo .pbix primero.');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        const arrayBuffer = e.target.result;
+        JSZip.loadAsync(arrayBuffer).then(function(zip) {
+            let xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>\n<pbix>\n';
+            let promises = [];
+
+            zip.forEach(function(relativePath, zipEntry) {
+                const promise = zipEntry.async('string').then(function(content) {
+                    xmlOutput += `<file name="${relativePath}">\n<![CDATA[\n${content}\n]]>\n</file>\n`;
+                }).catch(function() {
+                    // If the file is not readable as a string, we skip it for simplicity.
+                    // Alternatively, we could process binary data if needed.
+                });
+                promises.push(promise);
+            });
+
+            Promise.all(promises).then(function() {
+                xmlOutput += '</pbix>';
+                document.getElementById('output').textContent = xmlOutput;
+                downloadXMLFile(xmlOutput, 'pbix-content.xml');
+            });
+        });
+    };
+    
+    reader.readAsArrayBuffer(file);
+}
+
+function downloadXMLFile(text, filename) {
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/xml;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    
+    element.click();
+    
+    document.body.removeChild(element);
+}
+
+    </script>
+</body>
+</html>

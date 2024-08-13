@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formateador de SQL</title>
+
+</head>
+<body>
+
+<textarea id="inputSql" placeholder="Ingrese su SQL aquí"></textarea>
+<button onclick="formatSql()">Formatear SQL</button>
+
+<div id="formattedSql"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql-formatter/2.3.3/sql-formatter.min.js"></script>
+<script>
+function formatSql() {
+  var inputSql = document.getElementById("inputSql").value;
+  var formattedSql = sqlFormatter.format(inputSql, {language: 'sql'});
+  document.getElementById("formattedSql").innerText = formattedSql;
+}
+</script>
+
+</body>
+</html>
