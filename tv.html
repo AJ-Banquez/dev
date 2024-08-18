@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video con JW Player</title>
+    <!-- Incluye el script de JW Player desde la CDN -->
+    <script src="https://cdn.jwplayer.com/libraries/TjVDMviG.js"></script>
+    
+</head>
+<body>
+    <!-- Contenedor para el reproductor -->
+    <div id="my-video"></div>
+
+    <script type="text/javascript">
+        jwplayer("my-video").setup({
+            file: "https://ZW5k.la10tv.com:443/lb/dazn2/index.m3u8?token=9544e72cf8fad8947d2c2e10966b93ca511dbdfc-eb581a927326080d8c09fc5e311285cc-1724033580-1723997580&remote=181.78.86.10",
+            width: "100%",
+            aspectratio: "16:9",
+            controls: true,
+            autostart: false
+        });
+    </script>
+</body>
+</html>
